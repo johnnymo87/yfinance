@@ -280,6 +280,7 @@ class TickerBase():
 
         # get info and sustainability
         data = utils.get_json(ticker_url, proxy)
+        data = {k:v for k,v in data.items() if not (isinstance(v, dict) and 'err' in v)}
 
         # holders
         holders = _pd.read_html(ticker_url+'/holders')
@@ -337,7 +338,8 @@ class TickerBase():
             if isinstance(data.get(item), dict):
                 self._info.update(data[item])
 
-        self._info['regularMarketPrice'] = self._info['regularMarketOpen']
+        if self._info.get('regularMarketOpen'):
+            self._info['regularMarketPrice'] = self._info['regularMarketOpen']
         self._info['logo_url'] = ""
         try:
             domain = self._info['website'].split(
